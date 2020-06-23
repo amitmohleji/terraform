@@ -1,0 +1,79 @@
+---
+apiVersion: xl-deploy/v1
+kind: Applications
+spec:
+- name: Applications/terra-what
+  type: udm.Application
+  lastVersion: "2.0"
+  children:
+  - name: "3.0"
+    type: udm.DeploymentPackage
+    deployables:
+    - name: aws-ec2-mod
+      type: terraform.Module
+      boundTemplates:
+      - Applications/terra-what/1.0/{{%outputVariables.id%}}
+      environmentPath: aws-mod/env
+      automaticDictionary: "true"
+      dictionaryPath: dict
+      generateCIsFromResources: "true"
+      inputVariables:
+        region: us-east-2
+        ami: ami-0e84e211558a022c0
+      file: !file "aws_mod.zip"
+    templates:
+    - name: '{{%outputVariables.id%}}'
+      type: template.overthere.SshHost
+      instanceName: '{{%outputVariables.id%}}'
+      os: UNIX
+      address: '{{%outputVariables.ip%}}'
+      username: ubuntu
+      privateKeyFile: /Users/amitmohleji/.ssh/amit-us-east-2.pem
+  - name: "2.0"
+    type: udm.DeploymentPackage
+    deployables:
+    - name: hello-tf
+      type: terraform.Module
+      boundTemplates:
+      - Applications/terra-what/2.0/{{%outputVariables.id%}}
+      environmentPath: hello/env
+      automaticDictionary: "true"
+      dictionaryPath: dict
+      generateCIsFromResources: "true"
+      inputVariables:
+        region: us-east-2
+        ami: ami-0e84e211558a022c0
+      file: !file "hello.zip"
+    templates:
+    - name: '{{%outputVariables.id%}}'
+      type: template.overthere.SshHost
+      instanceName: '{{%outputVariables.id%}}'
+      os: UNIX
+      address: '{{%outputVariables.ip%}}'
+      username: ec2-user
+      privateKeyFile: /Users/amitmohleji/.ssh/amit-us-east-2.pem
+  - name: "1.0"
+    type: udm.DeploymentPackage
+    deployables:
+    - name: aws-ec2-resource
+      type: terraform.Module
+      boundTemplates:
+      - Applications/terra-what/1.0/{{%outputVariables.id%}}
+      environmentPath: aws-resource/env
+      automaticDictionary: "true"
+      dictionaryPath: dict
+      generateCIsFromResources: "true"
+      targets:
+      - aws_instance.example
+      inputVariables:
+        region: us-east-2
+        ami: ami-0e84e211558a022c0
+      file: !file "aws_tf.zip"
+    templates:
+    - name: '{{%outputVariables.id%}}'
+      type: template.overthere.SshHost
+      instanceName: '{{%outputVariables.id%}}'
+      os: UNIX
+      address: '{{%outputVariables.ip%}}'
+      username: ec2-user
+      privateKeyFile: /Users/amitmohleji/.ssh/amit-us-east-2.pem

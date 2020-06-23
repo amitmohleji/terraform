@@ -1,0 +1,18 @@
+---
+apiVersion: xl-deploy/v1
+kind: Infrastructure
+spec:
+- directory: Infrastructure/terra
+  children:
+  - directory: aws-mod
+---
+apiVersion: xl-deploy/v1
+kind: Infrastructure
+spec:
+- name: Infrastructure/localhost
+  type: overthere.LocalHost
+  os: UNIX
+  children:
+  - name: tfclient
+    type: terraform.TerraformClient
+    workingDirectory: /Users/amitmohleji/cloud/github/amitmohleji/terraform/aws
