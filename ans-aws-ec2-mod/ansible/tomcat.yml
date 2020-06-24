@@ -1,0 +1,25 @@
+---
+- hosts: localhost
+  gather_facts: True
+  check_mode: no
+  tasks:
+  - name: Add public ip addresses to an dynamic inventory
+    add_host:
+      name: "{{ host }}"
+      groups: aws
+
+  - local_action: wait_for port=22 host="{{ host }}" search_regex=OpenSSH delay=10
+- hosts: "{{ host }}"
+  gather_facts: False
+  check_mode: no
+  become: True
+  tasks:
+  - name: Install Tomcat 9
+    raw: >
+      test -e /var/lib/tomcat9 ||
+      (
+        (test -e /usr/bin/apt-get && (apt-get -y update && apt-get install -y tomcat9)) ||
+        (test -e /usr/bin/yum && (yum makecache fast && yum install -y tomcat9))
+      )
+    args:
+      creates: /var/lib/tomcat9

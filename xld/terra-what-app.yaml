@@ -4,15 +4,51 @@ kind: Applications
 spec:
 - name: Applications/terra-what
   type: udm.Application
-  lastVersion: "2.0"
+  lastVersion: "4.0"
   children:
+  - name: "4.0"
+    type: udm.DeploymentPackage
+    deployables:
+    - name: ans-aws-ec2-mod
+      type: terraform.Module
+      boundTemplates:
+      - Applications/terra-what/4.0/{{%outputVariables.id%}}
+      environmentPath: ans-aws-ec2-mod/env
+      automaticDictionary: "true"
+      dictionaryPath: dict
+      generateCIsFromResources: "true"
+      inputVariables:
+        region: us-east-2
+        ami: ami-0e84e211558a022c0
+      file: !file "ans-aws-ec2-mod.zip"
+    templates:
+    - name: '{{%outputVariables.id%}}'
+      type: template.overthere.SshHost
+      instanceName: terra/aws-mod/{{%outputVariables.id%}}
+      childTemplates:
+      - name: tomcat9
+        type: template.tomcat.Server
+        instanceName: tomcat9
+        childTemplates:
+        - name: vhost
+          type: template.tomcat.VirtualHost
+          instanceName: vhost
+        home: /var/lib/tomcat9
+        startCommand: systemctl start tomcat
+        stopCommand: systemctl stop tomcat
+        startWaitTime: "5"
+        stopWaitTime: "5"
+      os: UNIX
+      address: '{{%outputVariables.ip%}}'
+      username: ubuntu
+      privateKeyFile: /Users/amitmohleji/.ssh/amit-us-east-2.pem
   - name: "3.0"
     type: udm.DeploymentPackage
     deployables:
     - name: aws-ec2-mod
       type: terraform.Module
       boundTemplates:
-      - Applications/terra-what/1.0/{{%outputVariables.id%}}
+      - Applications/terra-what/3.0/{{%outputVariables.id%}}
       environmentPath: aws-mod/env
       automaticDictionary: "true"
       dictionaryPath: dict
