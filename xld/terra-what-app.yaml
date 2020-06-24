@@ -34,14 +34,16 @@ spec:
           type: template.tomcat.VirtualHost
           instanceName: vhost
         home: /var/lib/tomcat9
-        startCommand: systemctl start tomcat
-        stopCommand: systemctl stop tomcat
+        startCommand: systemctl start tomcat9.service
+        stopCommand: systemctl stop tomcat9.service
         startWaitTime: "5"
         stopWaitTime: "5"
       os: UNIX
+      connectionType: INTERACTIVE_SUDO
       address: '{{%outputVariables.ip%}}'
       username: ubuntu
       privateKeyFile: /Users/amitmohleji/.ssh/amit-us-east-2.pem
+      sudoUsername: root
   - name: "3.0"
     type: udm.DeploymentPackage
     deployables:
